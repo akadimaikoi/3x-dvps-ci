@@ -37,10 +37,10 @@ jobs:
 
             # Padrões permitidos para a branch de origem
             ALLOWED_PATTERNS=(
-              "release/*"    # Ex: release/v1.0.0
+              "feature/*"    # Ex: feature/implementa
               "hotfix/*"     # Ex: hotfix/problema-critico
               "ci/*"         # Ex: ci/git
-              # Adicione mais padrões aqui, se necessário. Ex: "feature/*"
+              # segue adicionando
             )
 
             MATCH_FOUND=false
