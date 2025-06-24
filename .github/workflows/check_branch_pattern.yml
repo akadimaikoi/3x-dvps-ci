@@ -1,0 +1,36 @@
+# Verificador de branch workflow
+name: Check Branches Pattern
+
+on:
+  workflow_call:
+    # inputs oriundos do contexto do Pull Request original.
+    inputs:
+      base_ref:
+        description: 'A branch base (destino) do Pull Request.'
+        required: true
+        type: string
+      head_ref:
+        description: 'A branch head (origem) do Pull Request.'
+        required: true
+        type: string
+
+jobs:
+  validate_pr_branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validar Padrões de Branch do PR
+        run: |
+          BASE_BRANCH="${{ inputs.base_ref }}"
+          HEAD_BRANCH="${{ inputs.head_ref }}"
+
+          echo "Branch Base do PR: $BASE_BRANCH"
+          echo "Branch Origem do PR: $HEAD_BRANCH"
+
+          # Verifica se a branch base é 'master' E a branch head NÃO é 'develop'
+          if [[ "$BASE_BRANCH" == "master" && "$HEAD_BRANCH" != "develop" ]]; then
+            echo "::error::Pull requests para 'master' devem ser originados APENAS da branch 'develop'."
+            echo "Por favor, feche este PR e abra um novo partindo da branch 'develop'."
+            exit 1 # Falha o job, indicando um erro no PR
+          else
+            echo "Verificação da branch de origem do PR: OK."
+          fi
