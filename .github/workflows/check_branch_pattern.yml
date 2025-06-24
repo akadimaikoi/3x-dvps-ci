@@ -31,6 +31,36 @@ jobs:
             echo "::error::Pull requests para 'master' devem ser originados APENAS da branch 'develop'."
             echo "Por favor, feche este PR e abra um novo partindo da branch 'develop'."
             exit 1 # Falha o job, indicando um erro no PR
+          # Nova condição: quando a branch base é 'develop'
+          elif [[ "$BASE_BRANCH" == "develop" ]]; then
+            echo "Validando branch de origem para merge em 'develop'..."
+
+            # Padrões permitidos para a branch de origem
+            ALLOWED_PATTERNS=(
+              "release/*"    # Ex: release/v1.0.0
+              "hotfix/*"     # Ex: hotfix/problema-critico
+              "ci/*"         # Ex: ci/git
+              # Adicione mais padrões aqui, se necessário. Ex: "feature/*"
+            )
+
+            MATCH_FOUND=false
+            for PATTERN in "${ALLOWED_PATTERNS[@]}"; do
+              # Usa o operador de casamento de padrão do bash (globbing)
+              if [[ "$HEAD_BRANCH" == $PATTERN ]]; then
+                MATCH_FOUND=true
+                echo "Branch '$HEAD_BRANCH' corresponde ao padrão permitido: '$PATTERN'."
+                break
+              fi
+            done
+
+            if [ "$MATCH_FOUND" = false ]; then
+              echo "::error::Pull requests para 'develop' devem ser originados de branches que seguem os padrões permitidos."
+              echo "Padrões permitidos: ${ALLOWED_PATTERNS[*]}"
+              echo "A branch '$HEAD_BRANCH' não corresponde a nenhum dos padrões aceitos."
+              exit 1 # Falha o job
+            else
+              echo "Verificação da branch de origem do PR para 'develop': OK."
+            fi
           else
             echo "Verificação da branch de origem do PR: OK."
           fi
